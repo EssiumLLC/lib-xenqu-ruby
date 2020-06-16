@@ -23,7 +23,7 @@ module Xenqu
                #need to sign without /api proxy map
                #that's not confusing or anything...
                if !params[:url].index( config.base_xenqu_api ).nil?
-                  header = ::SimpleOAuth::Header.new( params[:method].to_s.upcase, params[:url].gsub( /(.*)\/api(.*)/, '\1\2' ), nil, config.oauth_token.merge({ :ignore_extra_keys => true }) )
+                  header = ::SimpleOAuth::Header.new( params[:method].to_s.upcase, params[:url], nil, config.oauth_token.merge({ :ignore_extra_keys => true }) )
                   req['Authorization'] = header.to_s
                end
             end
