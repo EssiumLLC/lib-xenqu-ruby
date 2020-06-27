@@ -1,6 +1,8 @@
 module Xenqu
    module Models
-
+      
+      class FormFieldConflict < StandardError; end
+      
       class Jform_Definition < Base
          @id_attribute = 'definition_id'
 
@@ -106,7 +108,6 @@ module Xenqu
 
             missing = data.map{ | tag, value | @fields[tag] ? nil : tag }.compact
 
-            puts opts[:skip_field_validation]
             raise "Field(s) #{missing.join(', ')} not found in definition" if missing.length > 0 && !opts[:skip_field_validation]
 
             retries = 5 ; retry_list = {} ; run_list = data
@@ -141,7 +142,9 @@ module Xenqu
                retry_list = {}
 
             end while run_list.keys.length > 0 && retries > 0
-
+            
+            raise FormFieldConflict if run_list.keys.length > 0 && opts[:error_on_conflict]
+            
          end
 
          # files should be an array of file_ids, it can be a single file_id in a non-array, the endpoint does convert
