@@ -86,10 +86,10 @@ module Xenqu
             tmp.save
          end
 
-         def kick
+         def kick( async=false )
             tmp = self.class.new({
                'instance_id' => self.values['instance_id'],
-               'kick' => true
+               'kick' => async ? 'async' : true
             })
 
             tmp.save
