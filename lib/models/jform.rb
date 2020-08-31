@@ -121,12 +121,18 @@ module Xenqu
                            'instance_id' => self.values['instance_id'],
                            'page_id' => @fields[tag]['page_id'],
                            'state_id' => @fields[tag]['state_id'],
-                           'raw_value' => value,
+                           'raw_value' => value.to_s,
                            'fid' => @fields[tag]['fid']
                         })
 
                      begin
                         fld.save
+                        if fld.values['raw_value'] != value.to_s
+                            # May be locked or disabled and another
+                            # field put will enable it.  Put it back
+                            # on the list to retry.
+                            retry_list[tag] = value
+                        end
                      rescue
                         sleep( 1 )
                         retry_list[tag] = value
