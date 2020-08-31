@@ -92,7 +92,21 @@ module Xenqu
          @id_attribute = 'contact_id'
 
          def urlRoot
-            @urlRoot = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/actors'
+            @urlRoot = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/actors'
+         end
+
+         def contact_logs( params={} )
+            
+            qs = ''
+            if params.keys.length > 0
+                qs = '?' + params.to_param
+            end
+            
+            call_url = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/contact_log/' + self.values['contact_id'].to_s + qs
+
+            resp = Utils.call( :get, base_xenqu_api + call_url )
+
+            resp
          end
 
          def apply_rules
