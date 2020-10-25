@@ -62,6 +62,14 @@ module Xenqu
             Queue_Template[ 'tracking_group_id' => @values['tracking_group_id'] ]
          end
 
+         def generate_login( contact_id, opts = {} )
+            call_url = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/user/create'
+
+            resp = Utils.call( :post, base_xenqu_api + call_url, opts.merge({ :contact_id => contact_id }) )
+
+            resp
+         end
+
          def get_callbacks
             call_url = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/callback'
 
