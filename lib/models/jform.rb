@@ -127,13 +127,15 @@ module Xenqu
 
                      begin
                         fld.save
-                        if fld.values['raw_value'] != value.to_s
+                        if fld.values['raw_value'].to_s != value.to_s
+
                             # May be locked or disabled and another
                             # field put will enable it.  Put it back
                             # on the list to retry.
                             retry_list[tag] = value
                         end
                      rescue
+
                         sleep( 1 )
                         retry_list[tag] = value
                      end

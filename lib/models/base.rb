@@ -74,17 +74,22 @@ module Xenqu
                                         :accept => :json 
                                     },
                                 :open_timeout => 5 )
+             
+                    if resp && resp.code == 200
                     
-                    if Xenqu::Models.config.record_for_testing
-                        File.open( './rest-record-'+@rec_incr.to_s+'.txt', 'w') {|f| f.write( method.to_s+"\n"+url+"\n"+data+"\n"+resp ) }
-                        @rec_incr += 1
+                        if Xenqu::Models.config.record_for_testing
+                            File.open( './rest-record-'+@rec_incr.to_s+'.txt', 'w') {|f| f.write( method.to_s+"\n"+url+"\n"+data+"\n"+resp ) }
+                            @rec_incr += 1
+                        end
+
+                        # This should be happening in RestClient, but
+                        # doesn't seem to be working as of 2.0.0rc2
+                        resp.force_encoding( Encoding.find( 'utf-8' ) )
+
+                        JSON( resp )
+                    else
+                        {}
                     end
-
-                    # This should be happening in RestClient, but
-                    # doesn't seem to be working as of 2.0.0rc2
-                    resp.force_encoding( Encoding.find( 'utf-8' ) )
-
-                    return JSON( resp )
 
                 rescue RestClient::Exceptions::OpenTimeout => e
                     
@@ -93,7 +98,7 @@ module Xenqu
                     
                 rescue => e
 
-                    if e.respond_to?( :response )
+                    if e.respond_to?( :response ) && !e.response.nil?
                         retry if ( e.response.code == 502 || e.response.code == 504 ) && retry_count < 5
                         raise e.message.to_s + ' | ' + e.response.to_s
                     else                        
