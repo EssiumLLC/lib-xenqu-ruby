@@ -151,7 +151,7 @@ module Xenqu
 
             end while run_list.keys.length > 0 && retries > 0
             
-            raise FormFieldConflict if run_list.keys.length > 0 && opts[:error_on_conflict]
+            raise FormFieldConflict.new("#{self.values["tracking_id"]} - #{run_list.keys.join(",")}") if run_list.keys.length > 0 && opts[:error_on_conflict]
             
          end
 
