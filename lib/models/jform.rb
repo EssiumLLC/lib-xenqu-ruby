@@ -121,13 +121,13 @@ module Xenqu
                            'instance_id' => self.values['instance_id'],
                            'page_id' => @fields[tag]['page_id'],
                            'state_id' => @fields[tag]['state_id'],
-                           'raw_value' => value.to_s,
+                           'raw_value' => ( value.is_a?( Array ) ? value : value.to_s ),
                            'fid' => @fields[tag]['fid']
                         })
 
                      begin
                         fld.save
-                        if fld.values['raw_value'].to_s != value.to_s
+                        if !opts[:skip_value_check] && fld.values['raw_value'].to_s != value.to_s
 
                             # May be locked or disabled and another
                             # field put will enable it.  Put it back
