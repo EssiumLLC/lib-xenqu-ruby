@@ -22,7 +22,11 @@ module Xenqu
          @id_attribute = 'state_id'
 
          def urlRoot
-            @urlRoot = '/jform/instance/' + self.values['instance_id'].to_s + '/page/' + self.values['page_id'].to_s + '/field'
+            if self.values['page_id'].blank?
+               @urlRoot = '/jform/instance/' + self.values['instance_id'].to_s + '/sudofield'
+            else
+               @urlRoot = '/jform/instance/' + self.values['instance_id'].to_s + '/page/' + self.values['page_id'].to_s + '/field'
+            end
          end
 
       end
