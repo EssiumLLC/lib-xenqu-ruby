@@ -63,7 +63,8 @@ module Xenqu
                      'y' => field['y'].to_f,
                      'width' => field['width'].to_f,
                      'height' => field['height'].to_f,
-                     'value' => field['value']
+                     'value' => field['value'],
+                     'active' => field['active']
                   }
                end
 
@@ -73,7 +74,9 @@ module Xenqu
 
                 @fields[field['tag']] = {
                      'state_id' => field['_id'],
-                     'fid' => field['fid']
+                     'fid' => field['fid'],
+                     'value' => field['value'],
+                     'active' => field['active']
                 }
 
             end            
@@ -119,7 +122,7 @@ module Xenqu
 
                run_list.each do | tag, value |
 
-                  if !missing.include?( tag )
+                  if !missing.include?( tag ) && @fields[tag]['active']
 
                      fld = Jform_Field.new({
                            'instance_id' => self.values['instance_id'],
