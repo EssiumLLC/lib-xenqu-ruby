@@ -140,7 +140,11 @@ module Xenqu
 
             resp['data']
          end
-         
+
+         def exec_lyon( code, section = nil )
+            call_url = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/execute_lyon/' + self.values['contact_id'].to_s
+            Utils.call( :post, base_xenqu_api + call_url, { :code => code, :section => section.to_s } )
+         end         
       end
 
       class Tracking_Member < Base
@@ -607,6 +611,11 @@ module Xenqu
          def generate_pdf
             fdata = Utils.call( :get, base_xenqu_api + urlRoot + '/generate_pdf' )
             Net::HTTP.get( URI( base_xenqu_api + '/files/' + fdata['_temp_handle_id'] ) )
+         end
+         
+         def select_template( template_id )
+            call_url = '/tracking/attachments/'+self.values['tracking_id'].to_s+'/run_rules/select/'+template_id
+            Utils.call( :get, base_xenqu_api + call_url )
          end
          
          def attach_file( data )
