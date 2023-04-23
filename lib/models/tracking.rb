@@ -219,6 +219,9 @@ module Xenqu
                @urlRoot = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/items/activity'
             elsif @options[:scope] == 'schedule'
                @urlRoot = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/items/schedule'
+            elsif @options[:scope] == 'permissions'
+                #TODO:: we wont know tracking_group_id... 
+               @urlRoot = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/items/permissions'
             else
                @urlRoot = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/queues/'+self.values['tracking_queue_id'].to_s+'/items'
             end
