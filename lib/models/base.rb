@@ -73,8 +73,8 @@ module Xenqu
                                         :content_type => :json, 
                                         :accept => :json 
                                     },
-                                :open_timeout => 5 )
-             
+                                :open_timeout => 5)
+                                
                     if resp && resp.code == 200
                     
                         if Xenqu::Models.config.record_for_testing
@@ -140,7 +140,7 @@ module Xenqu
             def fetch( params = {} )
                 @fetched_once = true
 
-                data = Utils.call( :get, url, params )
+                data = Utils.call( :get, url, params ) 
 
                 if data.is_a?( Array )
                     data.map{ |d| self.class.new( d ) }
