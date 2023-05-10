@@ -103,6 +103,24 @@ module Xenqu
             @urlRoot = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/actors'
          end
 
+         def send_text( params )
+            call_url = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/send_text/' + self.values['contact_id'].to_s 
+
+            resp = Utils.call( :post, base_xenqu_api + call_url, params )
+
+            resp
+         end
+
+         def send_email( params )
+            template_id = params[:template_id] || '0000000'
+            
+            call_url = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/email_templates/' + template_id.to_s + '/send/' + self.values['contact_id'].to_s
+
+            resp = Utils.call( :post, base_xenqu_api + call_url, params )
+
+            resp 
+         end
+
          def contact_logs( params={} )
             
             qs = ''
