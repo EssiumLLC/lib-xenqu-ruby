@@ -13,6 +13,7 @@ module Xenqu
 
             def configure
                 yield( config )
+                ap config
 
                 config.base_xenqu_api ||= 'https://xenqu.com/api'
 
@@ -68,6 +69,8 @@ module Xenqu
                                 :method => method, 
                                 :url => url, 
                                 :payload => data, 
+                                :verify_ssl => false,
+                                :ssl_version => :TLSv1_2,
                                 :headers => { 
                                         :user_agent => 'lib-xenqu-ruby', 
                                         :content_type => :json, 
