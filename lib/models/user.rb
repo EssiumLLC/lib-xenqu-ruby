@@ -24,6 +24,11 @@ module Xenqu
             Utils.call( :post, base_xenqu_api + '/application/user/'+uid+'/provider/'+pid+'/token/'+key )
          end
 
+         # user_id, provider_id
+         def self.get_api_key( uid, pid )
+            Utils.call( :get, base_xenqu_api + '/application/user/'+uid+'/provider/'+pid )
+         end
+
       end
 
    end
