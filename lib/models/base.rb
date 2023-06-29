@@ -69,8 +69,6 @@ module Xenqu
                                 :method => method, 
                                 :url => url, 
                                 :payload => data, 
-                                :verify_ssl => false,
-                                :ssl_version => :TLSv1_2,
                                 :headers => { 
                                         :user_agent => 'lib-xenqu-ruby', 
                                         :content_type => :json, 
