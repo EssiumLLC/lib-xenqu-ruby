@@ -13,7 +13,6 @@ module Xenqu
 
             def configure
                 yield( config )
-                ap config
 
                 config.base_xenqu_api ||= 'https://xenqu.com/api'
 
