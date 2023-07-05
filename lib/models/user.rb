@@ -18,6 +18,16 @@ module Xenqu
          def self.recover_password( email )
             Utils.call( :post, base_xenqu_api + '/user/recover', Hash[ :user_email => email ] )
          end
+         
+         # user_id, provider_id and api_key
+         def self.authenticate_api_key( uid, pid, key )
+            Utils.call( :post, base_xenqu_api + '/application/user/'+uid+'/provider/'+pid+'/token/'+key )
+         end
+
+         # user_id, provider_id
+         def self.get_api_key( uid, pid )
+            Utils.call( :get, base_xenqu_api + '/application/user/'+uid+'/provider/'+pid )
+         end
 
       end
 
