@@ -47,7 +47,7 @@ module Xenqu
          end
 
          def prepare( params = {} )
-            self.fetch( params )
+            self.fetch( params.merge( :read_only => true ) )
 
             @fields = {}
             @values['definition']['pages'].each_with_index do | page, pidx |

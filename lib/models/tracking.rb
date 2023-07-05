@@ -62,14 +62,22 @@ module Xenqu
             Queue_Template[ 'tracking_group_id' => @values['tracking_group_id'] ]
          end
 
-         def generate_login( contact_id, opts = {} )
+         def generate_login( contact, opts = {} )
             call_url = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/user/create'
 
-            resp = Utils.call( :post, base_xenqu_api + call_url, opts.merge({ :contact_id => contact_id }) )
+            resp = Utils.call( :post, base_xenqu_api + call_url, opts.merge( contact ) )
 
             resp
          end
 
+         def recover_login( contact, opts = {} )
+            call_url = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/user/reset'
+
+            resp = Utils.call( :post, base_xenqu_api + call_url, opts.merge( contact ) )
+
+            resp            
+         end
+         
          def get_callbacks
             call_url = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/callback'
 
@@ -101,6 +109,24 @@ module Xenqu
 
          def urlRoot
             @urlRoot = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/actors'
+         end
+
+         def send_text( params )
+            call_url = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/send_text/' + self.values['contact_id'].to_s 
+
+            resp = Utils.call( :post, base_xenqu_api + call_url, params )
+
+            resp
+         end
+
+         def send_email( params )
+            template_id = params[:template_id] || '0000000'
+            
+            call_url = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/email_templates/' + template_id.to_s + '/send/' + self.values['contact_id'].to_s
+
+            resp = Utils.call( :post, base_xenqu_api + call_url, params )
+
+            resp 
          end
 
          def contact_logs( params={} )
