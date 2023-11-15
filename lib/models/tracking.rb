@@ -175,7 +175,7 @@ module Xenqu
 
       class Tracking_Member < Base
 
-         @id_attribute = '_id'
+         @id_attribute = 'user_id'
 
          def initialize( data, options = {} )
             @options = options
