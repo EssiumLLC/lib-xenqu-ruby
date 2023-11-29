@@ -183,13 +183,13 @@ module Xenqu
          end
 
          def urlRoot
-            if @options[:member_of]
-               @urlRoot = '/tracking/groups/'+self.values['user_id'].to_s+'/groups'
-            else
-               @urlRoot = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/members'
-            end
+            @urlRoot = '/tracking/groups/'+self.values['tracking_group_id'].to_s+'/members'
          end
-
+         
+         def member_of
+            call_url = '/tracking/groups/'+self.values['user_id'].to_s+'/groups'
+            Utils.call( :get, base_xenqu_api + call_url )
+         end
       end
 
       class Tracking_Queue < Base
