@@ -113,7 +113,10 @@ module Xenqu
 
          def fetch( params = {} )
 
-            params[:age] = 10000
+            if params.keys.length == 0
+                params['age'] = 10000
+            end
+
             super( params )
 
          end
