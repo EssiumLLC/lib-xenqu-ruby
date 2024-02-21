@@ -111,6 +111,13 @@ module Xenqu
             @urlRoot = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/actors'
          end
 
+         def fetch( params = {} )
+
+            params[:age] = 10000
+            super( params )
+
+         end
+
          def send_text( params )
             call_url = '/tracking/groups/' + self.values['tracking_group_id'].to_s + '/send_text/' + self.values['contact_id'].to_s 
 
