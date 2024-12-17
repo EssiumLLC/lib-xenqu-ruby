@@ -151,20 +151,20 @@ module Xenqu
             resp
          end
 
-         def set_record_callback( url )
+         def set_record_callback( url, section )
             call_url = '/tracking/groups/'+self.values['tracking_group_id'].to_s+
-                         '/actors/' + self.values['contact_id'].to_s+
-                         '/callback'
+                         '/actors/' + self.values['contact_id'].to_s+ 
+                         + '/' + section.to_s + '/callback'
 
             resp = Utils.call( :put, base_xenqu_api + call_url, { :callback_url => url } )
 
             resp
          end
 
-         def unset_record_callback( url )
+         def unset_record_callback( url, section )
             call_url = '/tracking/groups/'+self.values['tracking_group_id'].to_s+
                          '/actors/' + self.values['contact_id'].to_s+
-                         '/callback'
+                         + '/' + section.to_s + '/callback'
 
             resp = Utils.call( :delete, base_xenqu_api + call_url, { :callback_url => url } )
 
