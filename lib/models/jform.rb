@@ -122,7 +122,10 @@ module Xenqu
 
                run_list.each do | tag, value |
 
-                  if !missing.include?( tag ) && @fields[tag]['active']
+                  good_field = !missing.include?( tag ) && @fields[tag]['active'] # check if field exists and is active
+                  can_be_affected = !( @fields[tag]['locked'] || @fields[tag]['disabled'] ) #check if the field isn't locked or disabled
+
+                  if good_field && can_be_affected
 
                      fld = Jform_Field.new({
                            'instance_id' => self.values['instance_id'],
@@ -134,12 +137,17 @@ module Xenqu
 
                      begin
                         fld.save
+
+                        # if the field metadata says it isn't locked or disabled, but its values are still the same
+                        # then it probably means the field metadata was incorrect or was not updated somehow.
+                        # Or, they really are the same, but we (the runner) has zero way to discern that.
+                        # Although this is old code, this is now the fallback
                         if !opts[:skip_value_check] && fld.values['raw_value'].to_s != value.to_s
 
-                            # May be locked or disabled and another
-                            # field put will enable it.  Put it back
-                            # on the list to retry.
-                            retry_list[tag] = value
+                           # May be locked or disabled and another
+                           # field put will enable it.  Put it back
+                           # on the list to retry.
+                           retry_list[tag] = value
                         end
                      rescue
 
@@ -147,14 +155,22 @@ module Xenqu
                         retry_list[tag] = value
                      end
 
+                  elsif good_field && !can_be_affected
+                     # if it is disabled/locked, another field may enable it. retry it!
+                     retry_list[tag] = value
                   end
 
                end
 
                retries -= 1
-               sleep( 3 )
-               run_list = retry_list
-               retry_list = {}
+               # we don't need to spend all this time retrying if there is nothing to retry...
+               if retry_list.keys.length > 0 && retries > 0
+                  sleep( 3 )
+                  run_list = retry_list
+                  retry_list = {}
+               elsif retries > 0 # if we hit 0 retries remaining, we need to make sure the error can see what wasn't mapping
+                  run_list = {}
+               end
 
             end while run_list.keys.length > 0 && retries > 0
             
