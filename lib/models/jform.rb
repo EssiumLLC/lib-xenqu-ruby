@@ -222,31 +222,38 @@ module Xenqu
             vals = Utils.call( :put, base_xenqu_api + call_url, data )
          end
          
-         def upload_attachment( field, file, options = {} )
+         def upload_attachment( field, files, options = {} )
 
-            chunker = FileChunker.new({
-                 :url           => 'files',
-                 :chunkLimit    => options[:chunkLimit] || 500000,
-                 :chunkedField  => options[:chunkedField] || 'urlData',
-                 :data          => file
-              })
+            files = !files.is_a?(Array) ? [files] : files
+            files_ids = []
 
-            temp_id = chunker.send
-         
-            call_url = '/jform/instance/' + self.values['instance_id'].to_s + '/file/'
-            
-            data = { 
-                :content_type => file['content_type'],
-                :filename => file['filename'],
-                :for_id => field['state_id'],
-                :for_type => 'field',
-                :_temp_handle_id => temp_id
-            }
-            
-            ret = Utils.call( :post, base_xenqu_api + call_url, data )
+            files.each do |file|
+              chunker = FileChunker.new({
+                  :url           => 'files',
+                  :chunkLimit    => options[:chunkLimit] || 500000,
+                  :chunkedField  => options[:chunkedField] || 'urlData',
+                  :data          => file
+                })
+
+              temp_id = chunker.send
+          
+              call_url = '/jform/instance/' + self.values['instance_id'].to_s + '/file/'
+              
+              data = { 
+                  :content_type => file['content_type'],
+                  :filename => file['filename'],
+                  :for_id => field['state_id'],
+                  :for_type => 'field',
+                  :_temp_handle_id => temp_id
+              }
+              
+              ret = Utils.call( :post, base_xenqu_api + call_url, data )
+
+              files_ids.push(ret['files_id'])
+            end
             
             call_url = '/jform/instance/' + self.values['instance_id'].to_s + '/sudofield/' + field['state_id']            
-            ret = Utils.call( :put, base_xenqu_api + call_url, { :fid => field['fid'], :raw_value => [ret['files_id']] } )
+            ret = Utils.call( :put, base_xenqu_api + call_url, { :fid => field['fid'], :raw_value => files_ids } )
             
          end
          
