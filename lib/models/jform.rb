@@ -123,55 +123,52 @@ module Xenqu
                run_list.each do | tag, value |
 
                   good_field = !missing.include?( tag ) && @fields[tag]['active'] # check if field exists and is active
+                  next if !good_field
+                  
                   can_be_affected = !( @fields[tag]['locked'] || @fields[tag]['disabled'] ) #check if the field isn't locked or disabled
+                  if !can_be_affected
+                     # if it is disabled/locked, another field may enable it. retry it!
+                     retry_list[tag] = value
+                     next
+                  end
 
-                  if good_field && can_be_affected
+                  fld = Jform_Field.new({
+                        'instance_id' => self.values['instance_id'],
+                        'page_id' => @fields[tag]['page_id'],
+                        'state_id' => @fields[tag]['state_id'],
+                        'raw_value' => ( value.is_a?( Array ) ? value : value.to_s ),
+                        'fid' => @fields[tag]['fid']
+                     })
 
-                     fld = Jform_Field.new({
-                           'instance_id' => self.values['instance_id'],
-                           'page_id' => @fields[tag]['page_id'],
-                           'state_id' => @fields[tag]['state_id'],
-                           'raw_value' => ( value.is_a?( Array ) ? value : value.to_s ),
-                           'fid' => @fields[tag]['fid']
-                        })
+                  begin
+                     fld.save
 
-                     begin
-                        fld.save
-
-                        # if the field metadata says it isn't locked or disabled, but its values are still the same
-                        # then it probably means the field metadata was incorrect or was not updated somehow.
-                        # Or, they really are the same, but we (the runner) has zero way to discern that.
-                        # Although this is old code, this is now the fallback
-                        if !opts[:skip_value_check] && fld.values['raw_value'].to_s != value.to_s
-
-                           # May be locked or disabled and another
-                           # field put will enable it.  Put it back
-                           # on the list to retry.
-                           retry_list[tag] = value
-                        end
-                     rescue
-
-                        sleep( 1 )
+                     # if the field metadata says it isn't locked or disabled, but its values are still the same
+                     # then it probably means the field metadata was incorrect or was not updated somehow.
+                     # Or, they really are the same, but we (the runner) has zero way to discern that.
+                     # Although this is old code, this is now the fallback
+                     if !opts[:skip_value_check] && fld.values['raw_value'].to_s != value.to_s
+                        # May be locked or disabled and another
+                        # field put will enable it.  Put it back
+                        # on the list to retry.
                         retry_list[tag] = value
                      end
-
-                  elsif good_field && !can_be_affected
-                     # if it is disabled/locked, another field may enable it. retry it!
+                  rescue
+                     sleep( 1 )
                      retry_list[tag] = value
                   end
 
                end
 
                retries -= 1
+               
                # we don't need to spend all this time retrying if there is nothing to retry...
                if retry_list.keys.length > 0 && retries > 0
                   sleep( 3 )
-                  run_list = retry_list
-                  retry_list = {}
-               elsif retries > 0 # if we hit 0 retries remaining, we need to make sure the error can see what wasn't mapping
-                  run_list = {}
                end
-
+               
+               run_list = retry_list
+               retry_list = {}
             end while run_list.keys.length > 0 && retries > 0
             
             raise FormFieldConflict.new("#{self.values["tracking_id"]} - #{run_list.keys.join(",")}") if run_list.keys.length > 0 && opts[:error_on_conflict]
